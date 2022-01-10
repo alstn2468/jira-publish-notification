@@ -60,7 +60,7 @@ jobs:
           yarn deploy --yes
 
       - name: Send notification to JIRA
-        uses: alstn2468/jira-publish-notification@v1
+        uses: alstn2468/jira-publish-notification@v1.0.0
         if: ${{ success() }}
         with:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
