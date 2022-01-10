@@ -61,7 +61,7 @@ jobs:
 
       - name: Send notification to JIRA
         uses: alstn2468/jira-publish-notification@v1.0.0
-        if: ${{ success() }}
+        if: ${{ github.event_name == 'push' }}
         with:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
           JIRA_CLIENT_ID: '${{ secrets.JIRA_CLIENT_ID }}'
