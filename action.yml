@@ -3,6 +3,10 @@ name: 'jira-publish-notification'
 description: 'JIRA publish notification action using ticket name.'
 author: 'alstn2468'
 
+branding:
+  icon: 'bell'
+  color: 'blue'
+
 inputs:
   GITHUB_TOKEN:
     description: 'Github token (usage: ${{ secrets.GITHUB_TOKEN }})'
