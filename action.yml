@@ -1,0 +1,59 @@
+# action.yml
+name: 'jira-publish-notification'
+description: 'JIRA publish notification action using ticket name.'
+author: 'alstn2468'
+
+inputs:
+  GITHUB_TOKEN:
+    description: 'Github token (usage: ${{ secrets.GITHUB_TOKEN }})'
+    required: true
+  JIRA_CLIENT_ID:
+    description: JIRA Application client id
+    required: true
+  JIRA_CLIENT_SECRET:
+    description: JIRA Application client secret
+    required: true
+  JIRA_INSTANCE:
+    required: true
+    description: JIRA instance name (htttps://<name>.atlassian.net/) -> <name>
+  DEPLOY_ENVIRONMENT:
+    required: false
+    description: dev, prod, qa, etc...
+    default: 'production'
+
+runs:
+  using: 'composite'
+
+  steps:
+    - name: Parse Jira Keys from All Commits
+      id: jira_keys
+      if: always()
+      uses: HighwayThree/jira-extract-issue-keys@master
+      with:
+        is-pull-request: ${{ github.event_name == 'pull_request' }}
+        parse-all-commits: ${{ github.event_name == 'push' }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+
+    - name: Confirm Deploy State and Jira Key Values
+      if: always()
+      shell: bash
+      run: |
+        echo "BUILD_STATE=successful" >> $GITHUB_ENV
+        echo "Jira Keys: ${{ steps.jira_keys.outputs.jira-keys }}"
+
+    - name: Failed Build
+      if: failure()
+      shell: bash
+      run: echo "BUILD_STATE=failed" >> $GITHUB_ENV
+
+    - name: Push Deployment Info to Jira
+      if: steps.jira_keys.outputs.jira-keys != ''
+      uses: rohit-gohri/jira-ci-cd-integration@v0
+      with:
+        state: ${{ env.BUILD_STATE }}
+        environment: ${{ inputs.DEPLOY_ENVIRONMENT }}
+        issue: "${{ steps.jira_keys.outputs.jira-keys }}"
+        jira_instance: ${{ inputs.JIRA_INSTANCE }}
+        client_id: ${{ inputs.JIRA_CLIENT_ID }}
+        client_secret: ${{ inputs.JIRA_CLIENT_SECRET }}
