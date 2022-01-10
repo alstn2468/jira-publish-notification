@@ -9,7 +9,7 @@ branding:
 
 inputs:
   GITHUB_TOKEN:
-    description: 'Github token (usage: ${{ secrets.GITHUB_TOKEN }})'
+    description: 'Github token (usage: secrets.GITHUB_TOKEN)'
     required: true
   JIRA_CLIENT_ID:
     description: JIRA Application client id
@@ -23,7 +23,7 @@ inputs:
   DEPLOY_ENVIRONMENT:
     required: false
     description: dev, prod, qa, etc...
-    default: 'production'
+    default: 'prod'
 
 runs:
   using: 'composite'
